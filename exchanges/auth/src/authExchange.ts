@@ -38,6 +38,9 @@ export interface AuthConfig<T> {
   /** didAuthError() may be provided to tweak the detection of an authentication error that this exchange should handle. */
   didAuthError?(params: { error: CombinedError; authState: T | null }): boolean;
 
+  /** didResultAuthError() may be provided to tweak the detection of an authentication error that this exchange should handle. */
+  didResultAuthError?(params: { error?: CombinedError; data?: any,  authState: T | null }): boolean;
+
   /** willAuthError() may be provided to detect a potential operation that'll receive authentication error so that getAuth() can be run proactively. */
   willAuthError?(params: {
     authState: T | null;
@@ -69,6 +72,7 @@ export function authExchange<T>({
   addAuthToOperation,
   getAuth,
   didAuthError,
+  didResultAuthError,
   willAuthError,
 }: AuthConfig<T>): Exchange {
   return ({ client, forward }) => {
@@ -184,7 +188,13 @@ export function authExchange<T>({
 
       return pipe(
         result$,
-        filter(({ error, operation }) => {
+        filter(({ error, operation, data }) => {
+          if (didResultAuthError && didResultAuthError({ error, data: data, authState })) {
+            if (!operation.context.authAttempt) {
+              refreshAuth(operation);
+              return false;
+            }
+          }
           if (error && didAuthError && didAuthError({ error, authState })) {
             if (!operation.context.authAttempt) {
               refreshAuth(operation);
