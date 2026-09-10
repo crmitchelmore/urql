@@ -55,10 +55,10 @@
     "styled-components": "^5.2.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.0",
+    "@babel/core": "^7.29.6",
     "@mdx-js/mdx": "^1.5.7",
     "formideploy": "^0.4.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.18.1",
     "react-hot-loader": "^4.12.20",
     "react-static-plugin-sitemap": "7.2.2",
     "react-static-plugin-styled-components": "7.2.2",
